@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" Content="text/html;" charset="UTF-8">
+    <meta name="keywords" content="your tags" />
+    <meta name="description" content="150 words" />
+    <meta name="robots" content="index,follow" />
+    <meta name="author" content="Sup_" />
+    <title>博客页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .search-wrap {
+            margin: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-wrap input {
+            border: 1px #ddd solid;
+            border-radius: 4px;
+            height: 40px;
+            width: 160px;
+            padding: 0 5px;
+        }
+
+        .search-wrap span {
+            margin-left: 10px;
+            display: inline-block;
+            width: 45px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border: 1px #ddd solid;
+            border-radius: 5px;
+        }
+
+        h1 {
+            margin: 30px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .item {
+            display: flex;
+        }
+
+        .item a {
+            width: 500px;
+            padding: 5px 0;
+            margin: 0 20px;
+            height: 50px;
+            display: block;
+            border-bottom: 1px #eee solid;
+        }
+
+        .operation-btn-wrap {
+            width: 150px;
+            display: flex;
+            align-items: center;
+        }
+
+        .operation-btn-wrap span {
+            flex: 1;
+            margin-left: 10px;
+            border: 1px #ddd solid;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+
+        .title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .create-time {
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="search-wrap">
+        <input type="text" name="keyword" oninput="if(!value)getListReq()" onkeydown="if(event.keyCode == 13)getListReq(value)" placeholder="请输入标题查询">
+        <span class="search">查询</span>
+    </div>
+    <ul class="list">
+    </ul>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+    getListReq();
+
+    document.querySelector('.search').addEventListener('click', () => {
+        const keyword = document.querySelector('[name=keyword]').value
+        getListReq(keyword)
+    })
+
+    function getListReq(keyword = "") {
+        axios.get('/api/blog/list?isadmin=1&keyword=' + keyword).then(res => {
+            console.log(res)
+            if (res.data.code === 200) {
+                const data = res.data.data;
+                console.log(data.length)
+                if(!data.length){
+                    document.querySelector('.list').innerHTML = `<p style="text-align:center;font-size:15px;color:#999;">暂无数据~<p>`
+                    return false
+                }
+                document.querySelector('.list').innerHTML = data.reduce((htmlStr, item) => {
+                    return htmlStr += `<div class="item">
+                    <a href="./detail.html?id=${item.id}">
+                        <div class="title">${item.title}</div>
+                        <div class="create-time">
+                            <span>${item.author} ${item.createtime}</span>
+                        </div>
+                    </a>
+                    <div class="operation-btn-wrap" data-id="${item.id}">
+                        <span class="edit">编辑</span>
+                        <span class="add">新增</span>
+                        <span class="delete">删除</span>
+                    </div>
+                </div>`
+                }, '');
+            }
+        })
+    }
+
+    document.querySelector('.list').addEventListener('click', (e) => {
+        const target = e.target
+
+        if (e.target.tagName === 'A' || !target.parentNode.classList.contains('operation-btn-wrap')) {
+            return false
+        }
+
+        const type = target.className
+        const id = e.target.parentNode.dataset.id
+        console.log(type, "::", id)
+        switch (type) {
+            case 'edit'://编辑
+                location.href = `./edit.html?id=${id}`;
+                break;
+            case 'add'://新增
+                location.href = './new.html';
+                break;
+            default://删除
+                if (confirm('确定删除吗？')) {
+                    console.log('确定删除...')
+                    delReq(id)
+                }
+        }
+
+    })
+
+    /**
+     * 删除接口
+     * params:id
+     * **/
+    function delReq(id) {
+        axios.post(`/api/blog/del?id=${id}`).then(res => {
+            if (res.data.code === 200) {
+                alert('删除成功~');
+                getListReq()
+            } else {
+                alert(res.data.message)
+            }
+
+        }).catch(error => {
+            console.log(error)
+        })
+    }
+
+
+</script>
+
+</html>

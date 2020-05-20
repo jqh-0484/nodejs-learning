@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" Content="text/html;" charset="UTF-8">
+    <meta name="keywords" content="your tags" />
+    <meta name="description" content="150 words" />
+    <meta name="robots" content="index,follow" />
+    <meta name="author" content="Sup_" />
+    <title>登录注册页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .form {
+            padding: 20px 50px;
+        }
+
+        label {
+            display: block;
+            height: 44px;
+            line-height: 44px;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        label span {
+            display: inline-block;
+            width: 70px;
+        }
+
+        label input {
+            width: 200px;
+            height: 100%;
+            border: 1px #ddd solid;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form">
+        <label>
+            <span>用户名：</span>
+            <input type="text" name="username">
+        </label>
+        <label>
+            <span>密码：</span>
+            <input type="number" name="password">
+        </label>
+        <input type="submit" value="提交">
+    </div>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+    document.querySelector('[type=submit]').addEventListener('click', (e) => {
+        const username = document.querySelector('[name=username]').value
+        const password = document.querySelector('[name=password]').value
+
+        if (!username) {
+            return alert('请输入用户名！')
+        }
+
+        if (!password) {
+            return alert('请输入密码')
+        }
+
+
+        axios.post('/api/user/login', {
+            username,
+            password
+        })
+            .then(res => {
+                console.log(res)
+                if (res.data.code === 200) {
+                    localStorage.setItem('username', username)
+                    location.href = './index.html'
+                } else {
+                    alert(res.data.message)
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    })
+
+</script>
+
+</html>

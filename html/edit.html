@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" Content="text/html;" charset="UTF-8">
+    <meta name="keywords" content="your tags" />
+    <meta name="description" content="150 words" />
+    <meta name="robots" content="index,follow" />
+    <meta name="author" content="Sup_" />
+    <title>新建博客页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        input,
+        textarea {
+            border-radius: 4px;
+            width: 300px;
+            border: 1px #ddd solid;
+        }
+
+        input {
+            height: 40px;
+        }
+
+        textarea {
+            height: 150px;
+        }
+
+        .blog-title,
+        .blog-content,
+        .blog-submit {
+            padding: 10px 50px;
+        }
+
+        .blog-title>div,
+        .blog-content>div {
+            margin-bottom: 5px;
+        }
+
+        .blog-submit input {
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="blog-title">
+        <div>标题</div>
+        <input type="text" name="title" placeholder="请输入文章标题">
+    </div>
+    <div class="blog-content">
+        <div>内容：</div>
+        <textarea name="content" placeholder="请输入文章内容"></textarea>
+    </div>
+    <div class="blog-submit">
+        <input type="submit" value="提交">
+    </div>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+    const urlSearch = new URLSearchParams(location.search)
+    const id = urlSearch.get('id')
+
+    axios.get(`/api/blog/detail?id=${id}`).then(res => {
+        if (res.data.code === 200) {
+            const data = res.data.data
+            document.querySelector('[name=title]').value = data.title
+            document.querySelector('[name=content]').value = data.content
+        }
+    })
+
+    document.querySelector('[type=submit]').addEventListener('click', () => {
+        const title = document.querySelector('[name=title]').value
+        const content = document.querySelector('[name=content]').value
+        const author = localStorage.getItem('username')
+
+        if (!title) {
+            return alert('请输入标题')
+        }
+
+        if (!content) {
+            return alert('请输入内容')
+        }
+
+        axios.post(`/api/blog/update?id=${id}`, {
+            title,
+            content
+        }).then(res => {
+            console.log(res)
+            if (res.data.code === 200) {
+                alert('提交成功~')
+                window.history.go(-1)
+            } else {
+                alert(res.data.message)
+            }
+        }).catch(error => {
+            console.log(error)
+        })
+    })
+
+</script>
+
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" Content="text/html;" charset="UTF-8">
+    <meta name="keywords" content="your tags" />
+    <meta name="description" content="150 words" />
+    <meta name="robots" content="index,follow" />
+    <meta name="author" content="Sup_" />
+    <title>博客页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        h1 {
+            margin: 30px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .list a {
+            padding: 5px 0;
+            margin: 0 20px;
+            height: 50px;
+            display: block;
+            border-bottom: 1px #eee solid;
+        }
+
+        .title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .create-time {
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>博客首页</h1>
+    <ul class="list">
+    </ul>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+    axios.get('/api/blog/list').then(res => {
+        console.log(res)
+        if (res.data.code === 200) {
+            const data = res.data.data;
+            document.querySelector('.list').innerHTML = data.reduce((htmlStr, item) => {
+                return htmlStr += `<a href="./detail.html?id=${item.id}">
+                    <div class="title">${item.title}</div>
+                    <div class="create-time">
+                        <span>${item.author} ${item.createtime}</span>
+                    </div>
+                </a>`
+            }, '');
+        }
+    })
+
+
+</script>
+
+</html>
