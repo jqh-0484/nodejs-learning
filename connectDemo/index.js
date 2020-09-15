@@ -22,6 +22,9 @@ con.query(sql, (err, result) => {
   console.log(result);
   console.log("这里是测试git使用的");
   console.log("我是在dev分支上开发的哦~");
+  console.log(
+    "我是在dev分支上进行开发呢，我现在要提交dev的代码到dev分支上，然后在把它合到master分支上，最后在删除这个dev分支"
+  );
 });
 
 //关闭连接
