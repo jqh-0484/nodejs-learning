@@ -25,6 +25,9 @@ con.query(sql, (err, result) => {
   console.log(
     "我是在dev分支上进行开发呢，我现在要提交dev的代码到dev分支上，然后在把它合到master分支上，最后在删除这个dev分支"
   );
+  console.log(
+    "尝试怎么使用git命令解决代码冲突问题，现在是在master分支上修改代码并提交"
+  );
 });
 
 //关闭连接
